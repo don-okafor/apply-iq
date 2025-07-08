@@ -1,0 +1,13 @@
+python-docx>=0.8.11
+PyPDF2>=3.0.1
+requests>=2.31.0
+beautifulsoup4>=4.12.2
+python-dotenv>=1.0.0
+google-generativeai>=0.3.2
+langchain>=0.1.4
+pandas>=2.1.4
+numpy>=1.26.3
+selenium>=4.15.2
+webdriver-manager>=4.0.1
+linkedin-api>=2.0.0a3
+faiss-cpu>=1.7.4  # Pre-compiled CPU version of FAISS 
