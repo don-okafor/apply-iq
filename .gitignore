@@ -16,3 +16,7 @@ venv/
 # Mac/Linux/Windows system files
 .DS_Store
 Thumbs.db
+
+#prompts and instructionns
+job_search_instruction.txt
+job_search_prompt.txt

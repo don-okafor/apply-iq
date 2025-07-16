@@ -3,39 +3,33 @@ from ...interfaces.kv_store_interface import KeyValueStore
 from ...models.key_value import KeyValue
 from typing import Any
 import json
+import motor.motor_asyncio
+from ...config import get_settings
 
 class MongoStore(KeyValueStore):
-    def __init__(self, config: dict):
-        """
-        Initializes a MongoDB client and connects to the given database and collection.
-        Config example:
-        {
-            "host": "localhost",
-            "port": 27017,
-            "db": "apply-ql-db",
-            "collection": "resume"
-        }
-        """
-        self.client = MongoClient(
+    def __init__(self, mongo_db: str, mongo_collection: str):
+        """self.client = MongoClient(
             host=config.get("host", "localhost"),
             port=config.get("port", 27017)
         )
         self.db = self.client[config.get("db", "apply-ql-db")]
-        self.collection = self.db[config.get("collection", "resume")]
+        self.collection = self.db[config.get("collection", "resume")]"""
 
-    def save(self, data: KeyValue) -> None:
-        """
-        Inserts or updates a key-value pair in MongoDB.
-        """
-        self.collection.update_one(
+        cfg = get_settings()
+        self.client = motor.motor_asyncio.AsyncIOMotorClient(cfg.mongo_uri)
+        #self.db = self.client[cfg.mongo_db]
+        #self.col = self.db[cfg.mongo_collection]
+        self.db = self.client[mongo_db]
+        self.col = self.db[mongo_collection]
+
+
+    async def save(self, data: KeyValue):
+        await self.col.update_one(
             {"key": data.key},
             {"$set": {"value": data.value}},
-            upsert=True
+            upsert=True,
         )
 
-    def get(self, key: str) -> Any:
-        """
-        Retrieves a value by key from MongoDB.
-        """
-        result = self.collection.find_one({"key": key})
-        return result["value"] if result else None
+    async def get(self, key: str):
+        doc = await self.col.find_one({"key": key})
+        return doc["value"] if doc else None

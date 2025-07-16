@@ -1,20 +1,45 @@
-from .agents.kv_store_agent import KeyValueStorageAgent
+from .core.mcp import MCPOrchestrator
+import asyncio
+import os
 
-task = {
+async def run_workflow():
+  orchestrator = MCPOrchestrator()
+  sequence = ["file_read", "job_search", "kv_store"]
+    
+  # Language models
+  language_models = {
+        'gemini': {
+            "api_key": os.getenv('GEMINI_API_KEY'),
+            "model": os.getenv('MODEL_VERSION')
+        },
+        'openai': {
+            "api_key": os.getenv('OPENAI_API_KEY'),
+            "model": os.getenv('OPENAI_VERSION')
+        }
+    }
+  
+  task = {
     "key": "user:123",
-    "value": {"name": "Alice"},
     "store_type": "mongo",
-    "store_config": {
-        "host": "localhost",
-        "port": 27017,
-        "db": "mcp_test",
-        "collection": "users"
-    },
+    "filepath": "C:/Users/Donald/Documents/MyDocs/resume/Resume-DonaldOkafor.pdf",
+    'search_criteria': {
+            'keywords': ['software', 'engineering manager'],
+            'location': 'EMEA',
+            'salary_range': {'min': 80000, 'max': 150000},
+            'experience_range': {'min': 5, 'max': 25},
+            'job_type': 'Remote',
+            'category': 'Full-time',
+            'recency': '2025-07-01'
+        },
+    "language_models": language_models,
     # Optional agent chaining
     "next_agent": "logger",
     "next_task": {"message": "Data stored successfully."}
-}
+  }
 
-agent = KeyValueStorageAgent()
-result = agent.run(task)
-print(result)
+  
+
+  response = await orchestrator.run(sequence, task)
+  print("Workflow result:", response)
+
+asyncio.run(run_workflow())
