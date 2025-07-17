@@ -10,12 +10,21 @@ async def run_workflow():
   language_models = {
         'gemini': {
             "api_key": os.getenv('GEMINI_API_KEY'),
-            "model": os.getenv('MODEL_VERSION')
+            "model": os.getenv('GEMINI_VERSION')
         },
         'openai': {
             "api_key": os.getenv('OPENAI_API_KEY'),
             "model": os.getenv('OPENAI_VERSION')
-        }
+        },
+         'grok': {
+            "api_key": os.getenv('GROK_API_KEY'),
+            "model": os.getenv('GROK_VERSION')
+        },
+        'deepseek': {
+            "api_key": os.getenv('DEEPSEEK_API_KEY'),
+            "model": os.getenv('DEEPSEEK_VERSION')
+        },
+        "preferred_model": "deepseek"
     }
   
   task = {

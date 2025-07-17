@@ -9,6 +9,7 @@ from urllib.parse import quote_plus
 from google import genai
 from google.genai import types
 from pathlib import Path
+from .utilities.llm_client import run_completion
 
 class JobBoardSearchTool:
     def __init__(self, search_criteria: Dict[str, Any] = None,
@@ -22,8 +23,9 @@ class JobBoardSearchTool:
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
-        self.language_model = language_models['gemini']
-        self.client = genai.Client(api_key = self.language_model['api_key'])
+        self.preferred_model = language_models["preferred_model"]
+        self.language_model = language_models[self.preferred_model]
+        self.api_key = self.language_model['api_key']
         self.model = self.language_model['model']
         self.search_criteria = search_criteria
 
@@ -44,21 +46,13 @@ class JobBoardSearchTool:
         try:
             full_user_prompt = self.get_search_prompt(resume, search_prompt["prompt"])
             print(full_user_prompt)
+            system_instruction=search_prompt["instruction"]
 
-            response = self.client.models.generate_content(
-                model=self.model,
-                config=types.GenerateContentConfig(
-                    #system_instruction={"parts": [{"text": "You are a highly skilled job search assistant capable of performing real-time web searches."}]},
-                    #contents={"parts": [{"text": full_user_prompt}]}
-                    #system_instruction="You are a highly skilled job search assistant capable of performing real-time web searches."
-                    system_instruction=search_prompt["instruction"]
-                    ),
-                contents=full_user_prompt
-            )
-            
+            response = run_completion(self.preferred_model, full_user_prompt, system_instruction, model=self.model)
+          
             # Assuming the response directly contains the JSON string
-            print(response.text)
-            return response.text
+            print(response)
+            return response
         except Exception as e:
             print(f"Error during resume parsing: {e}")
             return None
@@ -66,13 +60,6 @@ class JobBoardSearchTool:
     def get_search_prompt(self, resume: str, search_prompt: str):
         #prompt_template = self.read_file(job_search_prompt_path)
         
-        """recency = "2025-06-10"
-        today = date.today().strftime("%Y-%m-%d")
-        location = "EMEA"
-        job_type = "Remote"
-        category = "Full-time"
-        resume_text = resume"""
-
         search_criteria = self.search_criteria
 
         recency = search_criteria["recency"]
