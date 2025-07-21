@@ -4,10 +4,12 @@ from ..agents.main_agent import BaseAgent
 from ..agents.kv_store_agent import KeyValueStorageAgent
 from ..agents.file_read_agent import FileReadAgent
 from ..agents.job_search_agent import JobSearchAgent
+from ..agents.resume_tailoring_agent import ResumeTailoringAgent
 
 AGENT_REGISTRY: Dict[str, Type[BaseAgent]] = {
     "file_read": FileReadAgent,
     "job_search": JobSearchAgent,
+    "resume_tailoring": ResumeTailoringAgent,
     #"kv_store": KeyValueStorageAgent,
 }
 
@@ -29,6 +31,6 @@ class MCPOrchestrator:
             elif isinstance(result, (list, tuple)):
                 task.update(dict(result))  # Convert list of pairs to dict
             else:
-                task.update({"resume": result})
+                task.update({"value": result})
             #task.update(result)
         return result

@@ -4,7 +4,7 @@ import os
 
 async def run_workflow():
   orchestrator = MCPOrchestrator()
-  sequence = ["file_read", "job_search", "kv_store"]
+  sequence = ["file_read", "job_search", "resume_tailoring"]
     
   # Language models
   language_models = {
@@ -24,7 +24,7 @@ async def run_workflow():
             "api_key": os.getenv('DEEPSEEK_API_KEY'),
             "model": os.getenv('DEEPSEEK_VERSION')
         },
-        "preferred_model": "deepseek"
+        "preferred_model": "gemini"
     }
   
   task = {

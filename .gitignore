@@ -18,5 +18,4 @@ venv/
 Thumbs.db
 
 #prompts and instructionns
-job_search_instruction.txt
-job_search_prompt.txt
+prompts_and_instructions/

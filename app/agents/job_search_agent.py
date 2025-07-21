@@ -19,7 +19,7 @@ class JobSearchAgent:
     
     
     def search_jobs(self, search_criteria: Dict[str, Any], 
-                    resume_text: str, language_models: Dict[str, Any]) -> List[Dict[str, Any]]:
+                    resume_text: str, language_models: Dict[str, Any]) -> str: #List[Dict[str, Any]]:
         """Search for jobs based on criteria."""
         logging.info("Searching for jobs with criteria:")
         logging.info(json.dumps(search_criteria, indent=2))
@@ -41,32 +41,38 @@ class JobSearchAgent:
         #job_search_prompts = MongoStore(mongo_db, "job_search_prompts")
 
         #Get file path
-        instruction_filename = "job_search_instruction.txt"
-        prompt_filename = "job_search_prompt.txt"
+        root_path = str((Path(__file__).parent.parent.parent / "prompts_and_instructions/").resolve()) 
+        instruction_filename = "\job_search_instruction.txt"
+        prompt_filename = "\job_search_prompt.txt"
 
         
+        #Get Search Prompts and Instruction
+        
+        #instruction_file_path = str((Path(__file__).parent.parent.parent / instruction_filename).resolve())
+        #prompt_file_path = str((Path(__file__).parent.parent.parent / prompt_filename).resolve())
 
-        instruction_file_path = str((Path(__file__).parent.parent.parent / instruction_filename).resolve())
-        prompt_file_path = str((Path(__file__).parent.parent.parent / prompt_filename).resolve())
+        instruction_file_path = root_path + instruction_filename
+        prompt_file_path = root_path +  prompt_filename
+
+        #instruction_file_path1 = Path(__file__).parent.parent.parent / instruction_filename
+        #prompt_file_path1 = Path(__file__).parent.parent.parent / prompt_filename
         
         instruction = parse_document(instruction_file_path)
         prompt = parse_document(prompt_file_path)
-        #Get Search Prompts and Instruction
-        #prompts = job_search_prompts.get("latest")
+        
+    
         prompts = {
             "instruction": instruction,
             "prompt": prompt
         }
 
         # Search for jobs
-        jobs_text = job_search.llm_job_search(resume_text, prompts)
-
-        #if not jobs_text:
-            #return None
+        #jobs_text = job_search.llm_job_search(resume_text, prompts)
+        jobs_text = parse_document(root_path + "\sample_job_response1.txt")
         
-        key = date.today().strftime("%Y-%m-%d")
+        key = datetime.now().strftime("%Y%m%d %H%M%S.%f")[:-3]
         kv = KeyValue(key=key, value=jobs_text)
-        job_list.save(kv)
+        #job_list.save(kv)
 
         jobs = self.type_convereter.get_dict_from_json(jobs_text)
         
@@ -77,6 +83,7 @@ class JobSearchAgent:
             logging.info(f"Description: {job['description']}")
             logging.info(f"URL: {job['url']}")
             logging.info("---")
+
         
         return jobs
     
@@ -86,9 +93,10 @@ class JobSearchAgent:
         language_models = task.get("language_models")
 
         if not resume:
-           return {"status": "error", "message": "Upload your most recent resume"} 
+            return {"JobSearchAgentError": {"status": "error", "message": "Upload your most recent resume"}} 
 
         try:
-           self.search_jobs(search_criteria, resume, language_models)
+            jobs = self.search_jobs(search_criteria, resume, language_models)
+            return {"jobs": jobs}
         except Exception as e:
-            return {"status": "error", "message": str(e)}
+            return {"JobSearchAgentError": {"status": "error", "message": str(e)}}

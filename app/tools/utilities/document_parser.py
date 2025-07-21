@@ -7,6 +7,9 @@ import io
 import boto3
 from urllib.parse import urlparse
 import fitz  # PyMuPDF
+from pathlib import Path
+from bs4 import BeautifulSoup
+import markdown
 from docx import Document as DocxDocument
 
 logger = logging.getLogger(__name__)
@@ -63,12 +66,35 @@ class TXTParser(DocumentParser):
             logger.exception(f"Error reading TXT: {filepath}")
             raise
 
+class MDParser(DocumentParser):
+    def parse(self, filepath: str) -> str:
+        logger.info(f"Parsing Markdown: {filepath}")
+        s3_helper = S3Helper()
+        try:
+            if s3_helper.is_s3_path(filepath):
+                logger.debug("Detected S3 URI, fetching bytes")
+                raw = s3_helper.fetch_s3_bytes(filepath).decode("utf-8")
+            else:
+                raw = Path(filepath).read_text(encoding="utf-8")
+
+            html = markdown.markdown(raw)
+            soup = BeautifulSoup(html, "html.parser")
+            return "".join(soup.strings)
+
+        except FileNotFoundError:
+            logger.exception(f"Markdown file not found: {filepath}")
+            raise
+        except Exception as e:
+            logger.exception(f"Error parsing Markdown: {e}")
+            raise
+
 
 class DocumentParserFactory:
     _parsers = {
         '.pdf': PDFParser(),
         '.docx': DOCXParser(),
         '.txt': TXTParser(),
+        '.md': MDParser(),
     }
 
     @staticmethod

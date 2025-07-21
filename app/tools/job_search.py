@@ -15,11 +15,6 @@ class JobBoardSearchTool:
     def __init__(self, search_criteria: Dict[str, Any] = None,
                  language_models: Dict[str, Any] = None):
         
-        """self.job_boards = {
-            'linkedin': self._search_linkedin,
-            'indeed': self._search_indeed,
-            # Add more job boards as needed
-        }"""
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
