@@ -42,7 +42,7 @@ class JobBoardSearchTool:
             full_user_prompt = self.get_search_prompt(resume, search_prompt["prompt"])
             print(full_user_prompt)
             system_instruction=search_prompt["instruction"]
-
+            openai_response_format = {"type": "json_object"}
             response = run_completion(self.preferred_model, full_user_prompt, system_instruction, model=self.model)
           
             # Assuming the response directly contains the JSON string

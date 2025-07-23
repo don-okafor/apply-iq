@@ -25,14 +25,14 @@ class OpenAIClient(LLMClient):
         self.client = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
     def complete(self, prompt: str, system=None, **kwargs):
         logger.info("Calling OpenAI...")
+       
         try:
             resp = self.client.chat.completions.create(
                 model=kwargs.pop("model", os.getenv("OPENAI_VERSION")),
                 messages=[m for m in [
                     {"role": "system", "content": system}] if system] +
-                    [{"role": "user", "content": prompt}],
-                    **kwargs
-                    )
+                    [{"role": "user", "content": prompt}]
+            )
             return resp.choices[0].message.content
         except OpenAIError as e:
             logger.error(f"OpenAI error: {e}")

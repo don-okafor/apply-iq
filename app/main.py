@@ -1,10 +1,15 @@
 from .core.mcp import MCPOrchestrator
 import asyncio
 import os
+from fastapi import FastAPI
+from app.api.routes import router as api_router
+
+#app = FastAPI()
+#app.include_router(api_router, prefix="/api")
 
 async def run_workflow():
   orchestrator = MCPOrchestrator()
-  sequence = ["file_read", "job_search", "resume_tailoring"]
+  sequence = ["file_read", "job_search", "resume_tailoring", "job_application"]
     
   # Language models
   language_models = {
@@ -24,9 +29,16 @@ async def run_workflow():
             "api_key": os.getenv('DEEPSEEK_API_KEY'),
             "model": os.getenv('DEEPSEEK_VERSION')
         },
-        "preferred_model": "gemini"
+        "preferred_model": "openai"
     }
-  
+  # SMTP configuration for email reports
+  smtp_config = {
+        'server': os.getenv('SMTP_SERVER'),
+        'port': int(os.getenv('SMTP_PORT', 587)),
+        'username': os.getenv('SMTP_USERNAME'),
+        'password': os.getenv('SMTP_PASSWORD')
+    }
+
   task = {
     "key": "user:123",
     "store_type": "mongo",
@@ -41,6 +53,8 @@ async def run_workflow():
             'recency': '2025-07-01'
         },
     "language_models": language_models,
+    'smtp_config': smtp_config,
+    "email_recipient": os.getenv('EMAIL_RECIPIENT'),
     # Optional agent chaining
     "next_agent": "logger",
     "next_task": {"message": "Data stored successfully."}

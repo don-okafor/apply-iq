@@ -23,7 +23,7 @@ class ResumeTailoringAgent:
 
 
     def tailor_resume_to_jobs(self, resume: str, jobs: List[Dict[str, Any]], 
-                              language_models: Dict[str, Any]):
+                              language_models: Dict[str, Any]) -> Dict[str, Any]:
         """Tailor Resume to a list of jobs."""
         #profile = self.profile_aggregator.get_aggregated_profile()
         #profile = resume
@@ -67,11 +67,14 @@ class ResumeTailoringAgent:
             logging.info("Cover Letter:")
             logging.info(cover_letter)
 
-            applications.append({"id": application_id, 
+            applications.append({"application_id": application_id, 
                                      "job": job, 
                                      "resume": tailored_resume, 
                                      "cover_letter": cover_letter_data,
-                                     "status": "pending"})
+                                     "status": "pending",
+                                     "application_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3],
+                                     "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+                                     })
             time.sleep(10)
 
         pending_applications["applications"] = applications
@@ -89,5 +92,6 @@ class ResumeTailoringAgent:
         try:
            pending_applications = self.tailor_resume_to_jobs(resume, jobs, language_models)
            return {"pending_applications": pending_applications}
+           #return pending_applications
         except Exception as e:
             return {"ResumeTailoringAgentError": {"status": "error", "message": str(e)}}

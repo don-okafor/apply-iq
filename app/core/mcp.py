@@ -5,11 +5,13 @@ from ..agents.kv_store_agent import KeyValueStorageAgent
 from ..agents.file_read_agent import FileReadAgent
 from ..agents.job_search_agent import JobSearchAgent
 from ..agents.resume_tailoring_agent import ResumeTailoringAgent
+from ..agents.job_application_agent import JobApplicationAgent
 
 AGENT_REGISTRY: Dict[str, Type[BaseAgent]] = {
     "file_read": FileReadAgent,
     "job_search": JobSearchAgent,
     "resume_tailoring": ResumeTailoringAgent,
+    "job_application" : JobApplicationAgent
     #"kv_store": KeyValueStorageAgent,
 }
 

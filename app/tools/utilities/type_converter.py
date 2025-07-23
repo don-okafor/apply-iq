@@ -90,3 +90,12 @@ class TypeConverter:
 
         except Exception as e:
             print(f"An error occurred: {e}")
+
+    def extract_json(text: str) -> str | None:
+        # Try extracting content inside code fences
+        m = re.search(r"```(?:json)?\s*(\{[\s\S]*\})\s*```", text)
+        if m:
+            return m.group(1)
+        # Or find first {...}
+        m = re.search(r"(\{[\s\S]*\})", text)
+        return m.group(1) if m else None

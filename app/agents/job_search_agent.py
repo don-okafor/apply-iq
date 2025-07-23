@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 from datetime import datetime, date
 from typing import Any, Dict, List
+from ..config import get_settings
 from ..models.key_value import KeyValue
 from ..tools.job_search import JobBoardSearchTool
 from ..tools.stores.mongo_store import MongoStore
@@ -14,6 +15,7 @@ class JobSearchAgent:
 
     def __init__(self, base: Any = None):
         self.base = base
+        self.cfg = get_settings()
         self.type_convereter = TypeConverter()
        
     
@@ -41,21 +43,9 @@ class JobSearchAgent:
         #job_search_prompts = MongoStore(mongo_db, "job_search_prompts")
 
         #Get file path
-        root_path = str((Path(__file__).parent.parent.parent / "prompts_and_instructions/").resolve()) 
-        instruction_filename = "\job_search_instruction.txt"
-        prompt_filename = "\job_search_prompt.txt"
+        instruction_file_path = str((Path(__file__).parent.parent.parent / self.cfg.prompts_root_path / self.cfg.js_instruction_filename).resolve()) 
+        prompt_file_path = str((Path(__file__).parent.parent.parent / self.cfg.prompts_root_path / self.cfg.js_prompt_filename).resolve()) 
 
-        
-        #Get Search Prompts and Instruction
-        
-        #instruction_file_path = str((Path(__file__).parent.parent.parent / instruction_filename).resolve())
-        #prompt_file_path = str((Path(__file__).parent.parent.parent / prompt_filename).resolve())
-
-        instruction_file_path = root_path + instruction_filename
-        prompt_file_path = root_path +  prompt_filename
-
-        #instruction_file_path1 = Path(__file__).parent.parent.parent / instruction_filename
-        #prompt_file_path1 = Path(__file__).parent.parent.parent / prompt_filename
         
         instruction = parse_document(instruction_file_path)
         prompt = parse_document(prompt_file_path)
@@ -67,8 +57,8 @@ class JobSearchAgent:
         }
 
         # Search for jobs
-        #jobs_text = job_search.llm_job_search(resume_text, prompts)
-        jobs_text = parse_document(root_path + "\sample_job_response1.txt")
+        jobs_text = job_search.llm_job_search(resume_text, prompts)
+        #jobs_text = parse_document(root_path + "\sample_job_response1.txt")
         
         key = datetime.now().strftime("%Y%m%d %H%M%S.%f")[:-3]
         kv = KeyValue(key=key, value=jobs_text)

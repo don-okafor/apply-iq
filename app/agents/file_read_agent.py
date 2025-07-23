@@ -1,6 +1,4 @@
 from pathlib import Path
-import PyPDF2
-from docx import Document
 import os
 from typing import Any, Dict
 from ..tools.utilities.document_parser import parse_document
