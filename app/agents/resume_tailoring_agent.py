@@ -87,11 +87,14 @@ class ResumeTailoringAgent:
         language_models = task.get("language_models")
 
         if not resume:
-           return {"ResumeTailoringAgentError": {"status": "error", "message": "No resume found: Upload your most recent resume"}}
+           return {"status": "error", "message": "ResumeTailoringAgentError: No resume found - Upload your most recent resume"}
+        
+        if len(jobs) <= 0:
+           return {"status": "error", "message": "ResumeTailoringAgentError: No jobs found!"}
 
         try:
            pending_applications = self.tailor_resume_to_jobs(resume, jobs, language_models)
-           return {"pending_applications": pending_applications}
+           return {"status": "success", "pending_applications": pending_applications}
            #return pending_applications
         except Exception as e:
-            return {"ResumeTailoringAgentError": {"status": "error", "message": str(e)}}
+            return {"status": "error", "message": "ResumeTailoringAgentError: " + str(e)}

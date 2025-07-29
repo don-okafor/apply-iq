@@ -47,8 +47,8 @@ class PDFParser(DocumentParser):
             else:
                 doc = fitz.open(filepath)
             return "\n".join(page.get_text() for page in doc)
-        except Exception:
-            logger.exception(f"Error parsing PDF: {filepath}")
+        except Exception as e:
+            logger.exception(f"Error parsing PDF: {filepath} - Message: {str(e)}")
             raise
 
 class TXTParser(DocumentParser):

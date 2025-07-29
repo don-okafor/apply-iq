@@ -11,10 +11,10 @@ class FileReadAgent:
         filepath = task.get("filepath")
         
         if not filepath or not os.path.isfile(filepath):
-            return {"FileReadAgentError": {"status": "error", "message": "Invalid or missing filepath"}}
+            return {"status": "error", "message": "FileReadAgentError: Invalid or missing filepath"}
 
         try:
-           return {"resume": parse_document(filepath)}
+           return {"status": "success", "resume": parse_document(filepath)}
         except Exception as e:
-            return {"FileReadAgentError":{"status": "error", "message": str(e)}}
+            return {"status": "error", "message": "FileReadAgentError: " + str(e)}
     

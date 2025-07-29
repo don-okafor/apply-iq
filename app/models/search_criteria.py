@@ -1,9 +1,9 @@
-from pydantic import BaseModel
+#from pydantic import BaseModel
 from dataclasses import dataclass
 from typing import Any, List, Dict
 
 @dataclass
-class SearchCriteria(BaseModel):
+class SearchCriteria:
     keywords: List[str]
     location: str
     salary_range: Dict[str, Any]

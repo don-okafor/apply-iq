@@ -11,6 +11,9 @@ from ..tools.stores.mongo_store import MongoStore
 from ..tools.utilities.type_converter import TypeConverter
 from ..tools.utilities.document_parser import parse_document
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
 class JobSearchAgent:
 
     def __init__(self, base: Any = None):
@@ -83,10 +86,10 @@ class JobSearchAgent:
         language_models = task.get("language_models")
 
         if not resume:
-            return {"JobSearchAgentError": {"status": "error", "message": "Upload your most recent resume"}} 
+            return {"status": "error", "message": "JobSearchAgentError: Upload your most recent resume"}
 
         try:
             jobs = self.search_jobs(search_criteria, resume, language_models)
-            return {"jobs": jobs}
+            return {"status": "success", "jobs": jobs}
         except Exception as e:
-            return {"JobSearchAgentError": {"status": "error", "message": str(e)}}
+            return {"status": "error", "message": "JobSearchAgentError: " + str(e)}

@@ -1,9 +1,16 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from app.core.mcp import MCPOrchestrator
-from typing import Any
+from typing import Any, Dict,List
+from dotenv import load_dotenv
 import os
+import json
+import logging
 from ..models.search_criteria import SearchCriteria
+
+load_dotenv()
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 router = APIRouter()
 #search_criteria = SearchCriteria()
@@ -14,11 +21,11 @@ router = APIRouter()
 
 class Request(BaseModel):
     file_path: str
-    search_criteria: SearchCriteria
+    search_criteria: Dict[str, Any]
 
-class KVOut(BaseModel):
-    status: str
-    key: str
+class Response(BaseModel):
+    reports: str
+    #key: str
 # Language models
 language_models = {
     'gemini': {
@@ -37,7 +44,7 @@ language_models = {
         "api_key": os.getenv('DEEPSEEK_API_KEY'),
         "model": os.getenv('DEEPSEEK_VERSION')
         },
-    "preferred_model": "gemini"
+    "preferred_model": "openai"
     }
 
 # SMTP configuration for email reports
@@ -48,8 +55,8 @@ smtp_config = {
     'password': os.getenv('SMTP_PASSWORD')
     }
 
-
-@router.post("/apply", response_model=KVOut)
+print("about to hit dummy breakpoint") 
+@router.post("/apply", response_model=Response)
 async def post_kv(request: Request):
     orchestrator = MCPOrchestrator()
     sequence = ["file_read", "job_search", "resume_tailoring", "job_application"]
@@ -62,7 +69,14 @@ async def post_kv(request: Request):
     "language_models": language_models,
     'smtp_config': smtp_config,
     "email_recipient": os.getenv('EMAIL_RECIPIENT'),
-  }
+    }
+    
+    language_model = language_models["openai"]
+    logging.info("API Key: ")
+    logging.info(language_model["api_key"])
+
+    logging.info("API Version: ")
+    logging.info(language_model["model"])
 
     res = await orchestrator.run(sequence, task)
     if res.get("status") != "success":

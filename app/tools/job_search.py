@@ -9,7 +9,7 @@ from urllib.parse import quote_plus
 from google import genai
 from google.genai import types
 from pathlib import Path
-from .utilities.llm_client import run_completion
+
 
 class JobBoardSearchTool:
     def __init__(self, search_criteria: Dict[str, Any] = None,
@@ -38,6 +38,7 @@ class JobBoardSearchTool:
     
 
     def llm_job_search(self, resume: str, search_prompt: str) -> str:
+        from .utilities.llm_client import run_completion
         try:
             full_user_prompt = self.get_search_prompt(resume, search_prompt["prompt"])
             print(full_user_prompt)

@@ -1,13 +1,35 @@
-from .core.mcp import MCPOrchestrator
-import asyncio
 import os
-from fastapi import FastAPI
+import asyncio
+from dotenv import load_dotenv
+from app.core.mcp import MCPOrchestrator
+from fastapi import FastAPI, Depends, status, HTTPException
+from fastapi.security import OAuth2PasswordBearer
 from app.api.routes import router as api_router
 
-#app = FastAPI()
-#app.include_router(api_router, prefix="/api")
+load_dotenv()
+app = FastAPI()
+app.include_router(api_router, prefix="/api")
 
-async def run_workflow():
+"""oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+SECRET_TOKEN = os.getenv("OAUTH_SECRET_KEY") 
+
+def verify_token(token: str = Depends(oauth2_scheme)):
+    if token != SECRET_TOKEN:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+@app.get("/protected", dependencies=[Depends(verify_token)])
+def protected_route():
+    return {"message": "Token is valid, access granted."}
+
+app.include_router(api_router, prefix="/api")"""
+
+
+""" async def run_workflow():
   orchestrator = MCPOrchestrator()
   sequence = ["file_read", "job_search", "resume_tailoring", "job_application"]
     
@@ -65,4 +87,6 @@ async def run_workflow():
   response = await orchestrator.run(sequence, task)
   print("Workflow result:", response)
 
-asyncio.run(run_workflow())
+asyncio.run(run_workflow()) """
+
+

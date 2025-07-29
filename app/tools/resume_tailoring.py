@@ -6,7 +6,6 @@ import time
 from pathlib import Path
 from ..config import get_settings
 from datetime import datetime, date
-from .utilities.llm_client import run_completion
 from ..tools.utilities.document_parser import parse_document
 
 class ResumeFineTunerTool:
@@ -19,7 +18,8 @@ class ResumeFineTunerTool:
     def tailor_resume(self, resume: str, job_description: Dict[str, Any]) -> Dict[str, Any]:
         """Tailor resume for a specific job description."""
         # Prepare the prompt for the LLM
-       
+        from .utilities.llm_client import run_completion
+
         prompt = self._create_prompt(resume, job_description)
         # Call the LLM to get tailored content
         tailored_content = run_completion(self.preferred_model, prompt, None, model=self.model)
@@ -64,6 +64,7 @@ class ResumeFineTunerTool:
 
     def _update_resume(self, tailored_content: str) -> str:
         """Update the resume with tailored content."""
+        from .utilities.llm_client import run_completion
         # Parse the LLM response and update the resume structure
         # This is a simplified version - in production, you'd want more robust parsing
 
@@ -88,7 +89,7 @@ class CoverLetterGeneratorTool:
 
     def generate_cover_letter(self, resume: Dict[str, Any], job_description: Dict[str, Any]) -> str:
         """Generate a tailored cover letter."""
-
+        from .utilities.llm_client import run_completion
         prompt = self._create_prompt(resume, job_description)
         
         cover_letter = run_completion(self.preferred_model, prompt, None, model=self.model)
